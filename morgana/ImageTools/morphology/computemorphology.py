@@ -44,6 +44,27 @@ def compute_morphological_info( mask, f_in, f_ma, down_shape,
     labeled_mask, _ = label(mask)
     # compute morphological info
     props = measure.regionprops(labeled_mask)
+    
+    # Drawing the major and minor axes
+    regions = regionsprops(labeled_mask)
+    fig, ax = plt.subplots()
+    ax.imshow(image, cmap=plt.cm.gray)
+
+    for props in regions:
+        y0, x0 = props.centroid
+        orientation = props.orientation
+        x1 = x0 + math.cos(orientation) * 0.5 * props.axis_minor_length
+        y1 = y0 - math.sin(orientation) * 0.5 * props.axis_minor_length
+        x2 = x0 - math.sin(orientation) * 0.5 * props.axis_major_length
+        y2 = y0 - math.cos(orientation) * 0.5 * props.axis_major_length
+
+        ax.plot((x0, x1), (y0, y1), '-r', linewidth=2.5)
+        ax.plot((x0, x2), (y0, y2), '-r', linewidth=2.5)
+        ax.plot(x0, y0, '.g', markersize=15)
+        
+    plt.show()
+    ##
+    
     dict_ = {}
     for key in keys:
         dict_[key] = props[0][key]
